@@ -1,0 +1,10 @@
+I think we'll be moving in the following direction:
+
+	HxEngine
+The game's logic is implemented here. It is sort of a dedicated server.
+
+	HxAbstractPlayer
+The interface that must be implemented by player classes to connect to the server.
+
+	HxAiPlayer, HxHumanPlayer
+Subclasses of HxAbstractPlayer are supposed to interface with the player on one side and the server on the other side.
