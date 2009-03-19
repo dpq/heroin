@@ -1,6 +1,6 @@
 I think we'll be moving in the following direction:
 
-	HxEngine
+	HxServer
 The game's logic is implemented here. It is sort of a dedicated server.
 
 	HxAbstractPlayer
@@ -8,3 +8,481 @@ The interface that must be implemented by player classes to connect to the serve
 
 	HxAiPlayer, HxHumanPlayer
 Subclasses of HxAbstractPlayer are supposed to interface with the player on one side and the server on the other side.
+
+
+HxHero
+    achievements: list(objectId of achievement source)
+
+HxCity
+
+HxCreature
+- garrison
+
+HxMine
+- garrison
+- award [resource]
+- resource generator
+
+HxDwelling
+- garrison
+- population
+- award [first level creatures]
+- population generator
+- garrison generator
+
+HxVillage
+- garrison
+- award [resources, creatures, artifacts, primary skills, secondary skills, spells]
+- garrison generator
+- award generator
+
+
+consumable(bool)
+
+populationGenerator(creatureId, productionPerWeek, populationCap)
+resourceGenerator(resourceId, productionPerDay, capacity)
+
+
+recordAchievement()
+receiveExperience(amount)
+creatureUpgrade(creatureId)
+
+learnPrimary(primarySkillId, amount, durationType)
+learnSecondary(secondarySkillId, masteryLevel, durationType)
+learnSpell(spellId)
+
+receiveLuck(amount, durationType)
+receiveMorale(amount, durationType)
+receiveMovement(amount, durationType)
+receiveLevel(amount)
+receiveSpellPoints(amount)
+
+awardResource(resouceId, amount)
+awardCreature(creatureId, amount)
+awardArtifact(artifactId)
+
+
+def newCrypt():
+choice1: { garrison : {medusa:20}, awardResource: {gold: 2000} , describeObject(oldCrypt) }
+choice2: { garrison : {}, awardResouce: {} }
+choice3: { garrison : {}, awardResouce: {} }
+choice4: { garrison : {}, awardResouce: {} }
+randomSelect(choice1: 30%, choice2: 30%, choice3: 30%, choice4: 10%)
+
+
+def oldCrypt():
+
+
+- questCheck()
+
+- userSelect()
+- randomSelect()
+
+movement:
+EOW
+EOD
+removeEOD
+permanently
+permanentlyForAll
+
+
+awardGenerator(awardType, )
+
+=================================================
+
+Star axis: +1 spell power OFAH
+Garden of revelation: +1 knowledge OFAH
+Marletto Tower: +1 defense OFAH
+Mercenary camp: +1 attack OFAH
+    learnPrimary, recordAchievement
+
+Witch Hut: random basic secondary skill except leadership and necromancy OFAH
+    learnSecondary
+
+University: 4 basic secondary skills for 1000gold each
+    userSelect, learnSecondary, payment
+
+Learning stone: +1000 exp OFAH
+    receiveExperience, recordAchievement
+
+Shrine of magic incantation: learn 1st level spell OFAH
+Shrine of magic gesture: learn 2st level spell OFAH
+Shrine of magic thought: learn 3st level spell OFAH
+    learnSpell
+
+School of magic: choice of +1 power or +1 knowledge for 1k gold OFAH
+School of war: choice of +1 attack or +1 defense for 1k gold OFAH
+    userSelect, learnPrimary, payment, recordAchievement
+
+Arena: choice of +2 attack or defense OFAH
+    userSelect, learnPrimary, recordAchievement
+
+Library of enlightenment: Possibly + 2 to all primary skills OFAH
+    questCheck, learnPrimary, recordAchievement
+
+Buoy: +1 morale UNB
+    receiveMorale
+
+Faerie Ring: +1 luck UNB
+Mermaids: +1 luck UNB
+    receiveLuck
+
+Fountain of luck: -1 - +3 luck UNB
+    randomSelect, receiveLuck
+
+Idol of Luck:
+On days 1,3,5: +1 luck until next battle
+On days 2,4,6: +1 morale UNB
+On day 7: +1 luck and +1 morale UNB
+    questCheck, receiveLuck, receiveMorale
+
+Temple:
+On days 1-6: +1 morale UNB
+On day 7: +2 morale UNB
+    questCheck, receiveMorale
+
+Rally flag:
++ 1 morale, +1 luck, +4 movement tiles EOD
+    receiveMorale, receiveLuck, receiveMovement
+
+Swan pond: + 2 luck UNB, lose all movement EOD
+    receiveLuck, receiveMovement
+
+Oasis: + 1 morale UNB, + 8 movement tiles EOD
+    receiveMorale, receiveMovement
+
+Watering hole: +1 morale UNB, +4 movement tiles EOD
+    receiveMorale, receiveMovement
+
+Fountain of youth: +1 morale UNB, +4  movement tiles EOD
+    receiveMorale, receiveMovement
+
+Stables: + 6 movement EOW and cavaliers auto-upgraded to champions
+    receiveMovement, creatureUpgrade
+
+Hill fort: upgrade base grade creatures for gold
+    userSelect, creatureUpgrade, payment
+
+Tree of knowledge:
+34% next level for free
+33% next level for 2k
+33% next level for 10 gems
+    randomSelect, receiveLevel, payment, recordAchievement
+
+Corpse: One-time.
+80% chance to find nothing
+20% chance to find a treasure, minor or major artifact
+Skeleton: One-time.
+80% chance to find nothing
+20% chance to find a treasure, minor or major artifact
+    randomSelect, awardArtifact
+
+Lean-to: 1-4 random resource other than gold. One-time.
+    randomSelect, awardResource
+
+Wagon: One-time.
+10% nothing
+40% 1 random treasure or minor artifact, if backpack full - nothing
+50% 2-5 any resource but gold
+    randomSelect, questCheck, awardArtifact, awardResource
+
+Dragon Utopia
+30%: 8 green, 5 red, 2 gold, 1 black for 20k gold, 1 treasure artifact, 1 minor artifact, 1 major artifact, 1 relic artifact
+30%: 8 green, 6 red, 3 gold, 2 black for 30k gold, 1 minor artifact, 1 major artifact, 2 relic artifact
+30%: 8 green, 6 red, 4 gold, 3 black for 40k gold, 1 major artifact, 3 relic artifact
+10%: 8 green, 7 red, 6 gold, 5 black for 50k gold, 4 relic artifact
+
+Cyclops stockpile
+30%: 20 cyclops 4 of every resource
+30%: 30 cyclops 6 of every resource
+30%: 40 cyclops 8 of every resource
+10%: 50 cyclops 10 of every resource
+    randomSelect, garrison, awardResource
+
+Dwarven treasury
+30%: 50 dw for 2 crys and 2500g
+30%: 75 dw for 3 crys and 4000g
+30%: 100 dw for 5 crys and 5000g
+10%: 150 dw for 10 crys and 7500g
+    randomSelect, garrison, awardResource
+
+Griffin conservatory
+30%: 40 grif for 2 angels
+30%: 60 grif for 3 angels
+30%: 80 grif for 4 angels
+10%: 100 grif for 5 angels
+    randomSelect, garrison, awardCreature
+
+Imp cache
+30%: 100 imps for 2 mercury and 1000g
+30%: 150 imps for 3 mercury and 1500g
+30%: 200 imps for 4 mercury and 2000g
+10%: 300 imps for 6 mercury and 5000g
+    randomSelect, garrison, awardResource
+
+Medusa stores
+30%: 20 medusa for 5 sulfur and 2k
+30%: 30 medusa for 6 sulfur and 3k
+30%: 40 medusa for 8 sulfur and 4k
+10%: 50 medusa for 10 sulfur and 5k
+    randomSelect, garrison, awardResource
+
+Naga bank
+30%: 10 naga for 8 gems and 4k
+30%: 15 naga for 12 gems and 6k
+30%: 20 naga for 16 gems and 8k
+10%: 30 naga for 24 gems and 12k
+    randomSelect, garrison, awardResource
+
+Dragonfly hive
+30%: 30 dfly for 4 wyverns
+30%: 45 dfly for 6 wyverns
+30%: 60 dfly for 8 wyverns
+10%: 90 dfly for 12 wyverns
+    randomSelect, garrison, awardCreature
+
+Derelict ship
+30% 20 water elems for 3k
+30% 30 water elems for 3k and 1 treasure art
+30% 40 water elems for 4k and 1 TA
+10% 60 water elems for 6k and 1 MinA
+    randomSelect, garrison, awardResource, awardArtifact
+
+
+def refugeeCamp():
+    populate(random, [4, 7], refugeeCamp, EOD)
+
+
+
+
+Dwellings: for every creature type; can be guarded against heroes of hostile alignments. Replenish every week. Add creature bonus to cities (+1)
+CG + garrison
+
+Refugee camp: random creature type available every week
+CG
+
+Mine: Wood, ore: +2 per day, all other resources give +1 per day
+RG + garrison
+
+Abandoned mine: fight a horde of troglodytes to restore the mine back to production (any resource except gold)
+RG + garrison
+
+Water mill: week #1 gives 500 gold; all other weeks give 1k gold
+AG
+
+Windmill: +03 - +06 random resources other than Wood or Gold
+randomSelect, awardGenerator
+
+Campfire: 400-600 gold and 4-6 random resource
+award
+
+Sea chest: award
+20% nothing
+70% 1500g
+10% 1500g and TA [if backpack full, only 1500g]
+
+Flotsam: award
+25% nothing
+25% 5 wood
+25% 5 wood and 200g
+25% 10 wood and 500g
+
+Shipwreck survivor
+55%: TA
+20%: MinA
+20%: MajA
+05%: RA
+
+
+
+
+Tiles Favourable winds:
++ 50% navigation skill
+
+Sirens
+- 30% of each creature stack and +1exp for every lost creature's health point
+
+Mystical garden: every week replenishes and gives
+50% 500gold
+50% 5 gems
+
+
+Crypt:
+30%: 30 skeletons 20 zombie for 1k
+30%: 25 skeletons 20 zombie 5 wights for 2k
+30%: 20 skel 20 zombie 10 wights 5 vamps for 2500 and 1 treasure art
+10%: 20 skel 20 zombie 10 wights 10 vamps for 5000 and 1 treasure art
+-1 Morale UNB if guardians have already been defeated
+
+
+2xShipwreck
+30% 10 wights for 2k
+30% 15 wights for 3k
+30% 25 wights for 4k and 1 treasure art
+10% 50 wights for 5k and 1 MinA
+-1 Morale UNB if guardians have already been defeated
+
+Pyramid:
+40 golden golems and 20 diamond golems for random 5th level spell. If not enough wisdom, it is lost
+-2 Luck UNB if guardians have already been defeated
+
+
+Obelisk: reveal a portion of the puzzle map
+
+Subterranean gate: portal to underground
+Monolith two way: portal
+Monolith one way entrance and exit: one-dir portal
+Whirlpool: two-way teleport, but you lose 50% of your weakest troop in the army
+
+Altar of sacrifice:
+Castle Rampart Tower heroes: sacrifice artifacts for exp
+Inferno Necro Dungeon heroes: sacrifice creatures for exp
+Stronghold Fortress Conflux heroes: sacrifice artifacts and creatures for exp
+
+Black market: buy artifacts for resources
+Freelancer's guild: sell creatures for resources
+Trading post: trade resources at the efficiency of 5 markets
+War machine factory: buy war machines for gold
+
+Sign and ocean bottle: displays a message when visited
+
+Cover of darkness: regenerates shroud for enemies in radius of 20 cells
+Hut of the magi and Eye of the magi:
+illuminate for the player area visible to the eyes of the magi
+
+
+
+2x thieves guild: Gives complete thieves guild info
+
+Lighthouse: +5 move to all player's ships for every lighthouse owned
+
+Cartographer of Land: For 1k remove all land shroud for player
+Cartographer of Ocean: For 1k remove all water shroud for player
+Cartographer of Underworld: For 1k remove all subter shroud for player
+
+Garrison: place to drop off troops
+Antimagic garrison: place to drop off troops. No spells can be cast here
+
+Pandora's box:
+Guardians + exp, morale, luck, spell points, resources, pr/sec skills [at various mastery levels], art, spells, creatures
+
+=== 7 colors for ==
+Keymaster's tent:
+Border guard: disappears after you visit the assoc.colored and come here. Doesn't let you through otherwise
+Border gate: doesn't disappear but lets you through after you visit the assoc.colored and come here. Doesn't let you through otherwise
+
+cursed ground: no moral/luck effects; only 1st level spells can be cast
+magic plains: all spells are cast at expert level
+
+clover field: gives all neutral aligned troops +2 luck
+evil fog: gives all good -1 morale, all evil +1 morale
+holy ground: gives all good +1 morale, all evil -1 morale
+
+fiery fields: fire spells are cast at expert level
+lucid pools: water spells are cast at expert level
+magic clouds: air spells are cast at expert level
+rocklands: earth spells are cast at expert level
+
+prison: a [specific] hero joins you for free
+
+sanctuary: hero residing here cannot be attacked
+
+pillar of fire and redwood observatory: 20 tiles radius remove shroud for you
+
+scholar: learn 1 spell, 1 sec skill or 1 primary skill. disappears
+
+3x seer's hut: complete a quest for a reward
+
+Shipyard: buy a boat for 1k and 20wood
+
+Warrior's Tomb: -3 morale UNB
+30% treasure art
+50% minor art
+15% major art
+5% relic art
+
+Tavern: recruit heroes, listen to rumours
+
+Magic well: replenish spell points
+
+Event - trigger
+
+reach1 position(times) (rouges can wait until you pass two-three times)
+reach2 HxHero_property value (forex level)
+reach3 art,res,creature
+
+ForEx:
+seen - reach3+reach1
+tent = reach1
+libr = reach2
+
+defeat creature/castle/hero
+
+mastertrigger - collect multiple trigger conditions
+forex - go through some waypoints
+
+build building /(forex: miners guild for treasury)/
+
+reset trigger
+
+HxAwardPack
+- garrison
+- award [resources, artifacts, primary skills, secondary skills, spells]
+====
+
+HxHero
+HxCreature
+HxMachine
+HxArtifact
+
+HxShip
+
+=========
+
+HxTileClass
+terrainType (land, ocean, impenetrable)
+passability (0 - 100 - 255)
+battlefieldWidth, battlefieldLength
+action
+
+HxTile
+tileClass
+plane, x, y
+
+==========
+
+HxObstacleClass
+obstacleType (advWater, advMountain, advForest, bfWater, bfMountain, bfForest)
+width, height, mask
+
+HxObstacle
+obstacleClass
+plane, x, y
+
+==========
+
+HxStructureClass
+width, height, mask (passable, entry, impassable)
+action
+
+HxStructure
+structureClass
+plane, x, y
+
+===========
+
+HxContainer
+capacity (tile: N, structure: N, creature: N, hero: N, artifact: N, warmachine: N)
+
+HxCity::HxContainer
+capacity = (creature: 7, hero: 2, buildings)
+alignment
+
+HxHero::HxContainer
+capacity = (creature: 7, artifact: 40, warmachine: 4)
+
+HxShip::HxContainer
+capacity = 1 hero, 1 creature
+
+
+HxQuest
