@@ -1,4 +1,5 @@
-#include <QtCore/QCoreApplication>
+#include "hxgatekeeper.h"
+#include <QCoreApplication>
 
 /*
 The Heroin server consists of two parts: the gatekeeper and the gamemaster.
@@ -10,6 +11,7 @@ Besides, the gatekeeper is responsible for launching and destroying gamemasters,
 */
 
 int main(int argc, char *argv[]) {
-    QCoreApplication a(argc, argv);
-    return a.exec();
+    QCoreApplication app(argc, argv);
+    HxGateKeeper gk(&app);
+    return app.exec();
 }
