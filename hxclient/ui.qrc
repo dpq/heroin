@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/rgb" >
+        <file alias="main.png" >resources/main.png</file>
+    </qresource>
+    <qresource prefix="/mp3" >
+        <file alias="main.mp3" >resources/menu.mp3</file>
+    </qresource>
+</RCC>
