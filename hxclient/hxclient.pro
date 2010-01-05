@@ -5,7 +5,9 @@ QT += network phonon
 TARGET = hxclient
 TEMPLATE = app
 SOURCES += main.cpp \
-    hxwindow.cpp
-HEADERS += hxwindow.h
+    hxwindow.cpp \
+		qrbscaledwidget.cpp
+HEADERS += hxwindow.h \
+		qrbscaledwidget.h
 RESOURCES += ui.qrc
 FORMS += hxwindow.ui
