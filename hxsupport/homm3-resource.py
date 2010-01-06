@@ -28,8 +28,16 @@ if len(lods) == 0:
 	exit()
 
 from lod import LodFile
+from snd import SndFile
+from vid import VidFile
 
 for filename in listdir(src):
 	if lower(filename).endswith(".lod"):
 		lod = LodFile(filename, src)
 		lod.save(dst)
+	elif lower(filename).endswith(".snd"):
+		snd = SndFile(filename, src)
+		snd.save(dst)
+	elif lower(filename).endswith(".vid"):
+		vid = VidFile(filename, src)
+		vid.save(dst)

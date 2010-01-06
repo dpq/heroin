@@ -4,12 +4,12 @@ import os
 import Image, ImageDraw
 
 """
-*** PCX FORMAT ***
+*** PCX format ***
 Bytes 00 - 03: image body length
 Bytes 04 - 07: image width in pixels
 Bytes 08 - 11: image height in pixels
-Bytes 12 - [12 + image body length]: image body (BGR or palette, depending on the type)
-Bytes [12 + image body length] - [268 + image body length]: RGB palette (if available, depending on the type)
+Bytes 12 - [12 + image body length]: image body
+Bytes [12 + image body length] - [268 + image body length]: RGB palette (if available)
 """
 class PcxFile:
 	def __init__(self, fileType, fileBody):
@@ -27,11 +27,6 @@ class PcxFile:
 				image += self.image[i + 2] + self.image[i + 1] + self.image[i]
 			self.image = image
 			self.image = Image.frombuffer('RGB', (self.width, self.height), self.image, 'raw', 'RGB', 0, 1)
-		else:
-			self.error = "File is not PCX"
 	
 	def save(self, filename):
-		if self.error != "":
-			print self.error
-			return
 		self.image.save(filename, "PNG")
