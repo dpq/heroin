@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import struct
 import os
+import time
+import unique
 
 """
 *** LOD format ***
@@ -11,7 +13,7 @@ Bytes 12 - 91: Unknown
 Bytes 92 - 320091: Item headers
 """
 class LodFile:
-	def __init__(self, filename, src):
+	def __init__(self, filename, src, dst):
 		file = open(os.path.join(src, filename))
 		self.magic = file.read(4)
 		if self.magic != "LOD\x00":
@@ -24,19 +26,17 @@ class LodFile:
 			l = LodItem(file)
 			if l.filename != "":
 				self.items.append(l)
-				print l.filename
 		for i in range(0, len(self.items)):
 			self.items[i].setBody(file)
-
-	def save(self, dst):
-		for i in range(0, len(self.items)):
 			self.items[i].save(dst)
+			self.items[i] = None
 
-import pcx
+import pcxitem
+import defitem
 import zlib
 
 """
-*** LOD item (file header) format ***
+*** LOD item format ***
 Bytes 00 - 15: File name, including extension and something unknown
 Bytes 16 - 19: File body start offset
 Bytes 20 - 23: File body uncompressed size
@@ -60,6 +60,9 @@ class LodItem:
 		# If there is a registered class to process this file type, instantiate the corresponding processing class
 		if self.fileType in self.processors.keys():
 			self.output = self.processors[self.fileType](self.fileType, self.body)
+			# DEF files have their type specified in their own header. This type value is prevalent over the type specified in the LOD item header.
+			if self.fileType >= 0x40 and self.fileType <= 0x49:
+				self.fileType = self.output.fileType
 	
 	def save(self, dst):
 		# Make sure the path to save the file is available
@@ -70,21 +73,27 @@ class LodItem:
 			except:
 				print "Could not create destination directory", dst
 				return
-		dst = os.path.join(dst, self.filename)
 		# If the file has a special processor, order it to save the file as it sees fit. Otherwise, save the binary dump of the body.
 		if self.output:
-			if os.path.exists(dst):
-				print "Overwriting", dst
-			self.output.save(dst)
+			self.output.save(dst, self.filename)
 		else:
-			file = open(dst, "wb")
+			file = open(unique.save(dst, self.filename), "wb")
 			file.write(self.body)
 			file.close()
 
 	# Processor classes corresponding to each file type
 	processors = {
-		0x10: pcx.PcxFile,
-		0x11: pcx.PcxFile
+		0x10: pcxitem.PcxItem,
+		0x11: pcxitem.PcxItem,
+		0x40: defitem.DefItem,
+		0x41: defitem.DefItem,
+		0x42: defitem.DefItem,
+		0x43: defitem.DefItem,
+		0x44: defitem.DefItem,
+		0x45: defitem.DefItem,
+		0x46: defitem.DefItem,
+		0x47: defitem.DefItem,
+		0x49: defitem.DefItem,
 	}
 
 	# Directories to which to save each file type
@@ -94,7 +103,6 @@ class LodItem:
 		0x10: "pcx_palette",
 		0x11: "pcx_rgb",
 		0x40: "combat_spells",
-		0x41:	"0x41",
 		0x42: "combat_creatures",
 		0x43: "advmap_objects",
 		0x44: "advmap_heroes",

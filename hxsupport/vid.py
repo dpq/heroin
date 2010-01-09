@@ -1,15 +1,17 @@
 #!/usr/bin/python
 import struct
 import os
+import time
+import unique
 
 """
 *** VID format ***
 Bytes 00 - 03: Number of files in this VID
 """
 class VidFile:
-	def __init__(self, filename, src):
+	def __init__(self, filename, src, dst):
 		file = open(os.path.join(src, filename))
-		(self.itemCount, ) = struct.unpack("i", file.read(4))
+		self.itemCount = struct.unpack("i", file.read(4))[0]
 		self.items = []
 		for i in range(0, self.itemCount):
 			v = VidItem(file)
@@ -21,10 +23,8 @@ class VidFile:
 		self.items[-1].size = os.stat(os.path.join(src, filename))[6] - self.items[-1].offset
 		for i in range(0, len(self.items)):
 			self.items[i].setBody(file)
-
-	def save(self, dst):
-		for i in range(0, len(self.items)):
 			self.items[i].save(dst)
+			self.items[i] = None
 
 """
 *** VID item format ***
@@ -34,7 +34,7 @@ Bytes 40 - 43 : File body start offset
 class VidItem:
 	def __init__(self, file):
 		self.filename = file.read(40).split('\x00')[0].lower()
-		(self.offset, ) = struct.unpack("i", file.read(4))
+		self.offset = struct.unpack("i", file.read(4))[0]
 		self.size = 0
 	
 	def setBody(self, file):
@@ -50,7 +50,6 @@ class VidItem:
 			except:
 				print "Could not create destination directory", dst
 				return
-		dst = os.path.join(dst, self.filename)
-		file = open(dst, "wb")
+		file = open(unique.save(dst, self.filename), "wb")
 		file.write(self.body)
 		file.close()

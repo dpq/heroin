@@ -1,13 +1,15 @@
 #!/usr/bin/python
 import struct
 import os
+import time
+import unique
 
 """
 *** SND format ***
 Bytes 00 - 03: Number of files in this SND
 """
 class SndFile:
-	def __init__(self, filename, src):
+	def __init__(self, filename, src, dst):
 		file = open(os.path.join(src, filename))
 		(self.itemCount, ) = struct.unpack("i", file.read(4))
 		self.items = []
@@ -17,10 +19,8 @@ class SndFile:
 				self.items.append(s)
 		for i in range(0, len(self.items)):
 			self.items[i].setBody(file)
-
-	def save(self, dst):
-		for i in range(0, len(self.items)):
 			self.items[i].save(dst)
+			self.items[i] = None
 
 """
 *** SND item format ***
@@ -46,7 +46,6 @@ class SndItem:
 			except:
 				print "Could not create destination directory", dst
 				return
-		dst = os.path.join(dst, self.filename)
-		file = open(dst, "wb")
+		file = open(unique.save(dst, self.filename), "wb")
 		file.write(self.body)
 		file.close()
